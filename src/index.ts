@@ -1,29 +1,43 @@
-import axios from 'axios';
-import express, {Request, Response} from 'express';
+import axios, { AxiosResponse } from 'axios';
+import express, { Request, Response } from 'express';
 
-export interface User {
-    name: string
+interface GithubUser {
+    name: string;
+    // Add other required fields if needed.
 }
 
-const options = {method: 'GET', url: 'https://api.github.com/users/AndrianBalanescu'};
-
-let resData = {};
-
-axios.request(options).then(function (response) {
-  console.log(response.data);
-    resData = response.data;
-}).catch(function (error) {
-  console.error(error);
-});
+const GITHUB_API_URL = 'https://api.github.com/users/AndrianBalanescu';
 
 const app = express();
-const port = process?.env?.PORT ?? 8000
+const port: number = parseInt(process.env.PORT || '8000', 10);
 
-app.get('/', async (req: Request, res: Response) => {
-    return res.json(resData);
+// Fetch Github user data
+const fetchGithubUserData = async (): Promise<GithubUser | null> => {
+    try {
+        const response: AxiosResponse<GithubUser> = await axios.get(GITHUB_API_URL);
+        return response.data;
+    } catch (error) {
+        console.error('Failed to fetch Github user data:', error);
+        return null;
+    }
+};
+
+let cachedUserData: GithubUser | null = null;
+
+// Initial data fetch and caching
+fetchGithubUserData().then(data => {
+    if (data) {
+        cachedUserData = data;
+    }
 });
 
+app.get('/', (req: Request, res: Response) => {
+    if (!cachedUserData) {
+        return res.status(500).json({ error: 'Failed to fetch Github user data.' });
+    }
+    return res.json(cachedUserData);
+});
 
 app.listen(port, () => {
-    console.log(`⚡️[server]: Server is 123 at http://localhost:${port}`);
+    console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
