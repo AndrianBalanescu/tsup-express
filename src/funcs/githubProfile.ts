@@ -1,5 +1,6 @@
 
 
+// @ts-nocheck
 import { AxiosResponse }  from 'axios';
 import axios from 'axios';
 
@@ -16,7 +17,7 @@ const GITHUB_API_URL = 'https://api.github.com/users/AndrianBalanescu';
  
 
 // Fetch Github user data
-export const fetchGithubUserData = async (): Promise<GithubUser | null> => {
+export const githubProfile = async (): Promise<GithubUser | null> => {
     try {
         const response: AxiosResponse<GithubUser> = await axios.get(GITHUB_API_URL);
         return response.data;
