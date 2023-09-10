@@ -42,11 +42,11 @@ const format = winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
   // Tell Winston that the logs must be colored
   winston.format.colorize({ all: true }),
-  winston.format.json(),
+  // winston.format.json(),
   
   // Define the format of the message showing the timestamp, the level and the message
   winston.format.printf(
-    (info) => `${info.timestamp} ${info.message}`,
+    (info) => `${info.timestamp} ${info.message} ${info.level}  `,
   ),
 ) 
 // Define which transports the logger must use to print out messages.
@@ -115,4 +115,4 @@ export const getLatestLog = () => {
  
   return logs;
 }
-getLatestLog();
+// getLatestLog();

@@ -1,27 +1,20 @@
-
-import express from 'express';
-import { getProfile ,postProfile} from './controllers/gitController';
-import { Request, Response, NextFunction } from 'express';
-import { logger } from './config/logger';
-logger.info('Hello world');
+import express, { Request, Response, NextFunction } from 'express';
+import { getProfile, postProfile } from './controllers/gitController';
+import { logger  } from './config/logger';
+import indexRouter from './routes/index';
+import userRoutes from './routes/userRoutes';
+import productRoutes from './routes/productRoutes';
+import { loggerMiddleware } from './controllers/gitController';
 
 const app = express();
 const port = 3000;
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
-
-
-app.get('/gitit', getProfile);
-app.get('/test', getProfile);
-
-app.post('/gitit', postProfile);
-
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
-});
+app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+app.use(loggerMiddleware);
+app.use('/', indexRouter);
+app.use('/users', userRoutes);
+app.use('/products', productRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
